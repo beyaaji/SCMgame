@@ -11,6 +11,6 @@
         android:id="@+id/bgSplash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/logo"/>
+        android:src="@drawable/loading"/>
 
 </RelativeLayout>
