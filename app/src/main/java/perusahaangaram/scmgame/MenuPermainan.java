@@ -42,6 +42,25 @@ public class MenuPermainan extends AppCompatActivity {
     private EditText inputNama;
     private RelativeLayout layoutDialog;
 
+    private ImageView ikonStore[] = new ImageView[5];
+    private ImageView ikonRumah[] = new ImageView[7];
+    private ImageView notif_IkonStore[] = new ImageView[5];
+    private ImageView notif_IkonRumah[] = new ImageView[7];
+
+    private int[][] resStore = {
+            {R.id.S_1, R.id.S_2, R.id.S_3, R.id.S_4, R.id.S_5}
+    };
+    private int [] [] resNotifStore = {
+            {R.id.N_S_1, R.id.N_S_2, R.id.N_S_3, R.id.N_S_4, R.id.N_S_5}
+    };
+    private int[][] resRumah = {
+            {R.id.R_1, R.id.R_2, R.id.R_3, R.id.R_4, R.id.R_5}
+    };
+    private int [][] resNotifRumah = {
+            {R.id.N_R_1, R.id.N_R_2, R.id.N_R_3, R.id.N_R_4, R.id.N_R_5}
+    };
+
+
     //nama player
     private String nama;
 

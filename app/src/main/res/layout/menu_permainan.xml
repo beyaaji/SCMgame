@@ -216,7 +216,7 @@
 
         </RelativeLayout>
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/line1"
         android:layout_width="119dp"
@@ -311,8 +311,7 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="142dp"
-        android:background="@drawable/dialog_input_nama"
-        android:alpha="0.0" >
+        android:background="@drawable/dialog_input_nama">
 
         <TextView
             android:id="@+id/teks1"
