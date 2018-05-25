@@ -3,10 +3,10 @@ package perusahaangaram.scmgame;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     private static boolean suara;
     private static boolean musik;
     private boolean tPengaturan = false;
+    private static MediaPlayer music;
 
     private ImageView tombolMain;
     private ImageView tombolPengaturan;
@@ -30,6 +31,7 @@ private ImageView tombolKeluar;
         setContentView(R.layout.activity_main);
         ImageView tSuara = (ImageView) findViewById(R.id.suara);
         ImageView tMusik = (ImageView) findViewById(R.id.musik);
+        music = MediaPlayer.create(MainActivity.this, R.raw.music);
 
         if (!tPengaturan) {
             tSuara.setVisibility(View.GONE);
@@ -103,20 +105,40 @@ tombolKeluar = (ImageView) findViewById(R.id.tombolKeluar);
         Keluar();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        music.start();
+    }
+
     public void Keluar() {
         new AlertDialog.Builder(this)
                 .setMessage("Yakin Ingin Keluar?")
                 .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //kode saat memilih ya
-//                        musik = false;
-//                        gantiNada("musik");
+//                        kode saat memilih ya
+                        musik = false;
+                        gantiNada("musik");
                         finish();
                     }
                 }).setNegativeButton("Tidak", null)
                 .show();
 
+    }
+    public static void gantiNada(String nada) {
+        if (nada.equalsIgnoreCase("musik")) {
+            if (musik)
+                music.start();
+            else
+                music.release();
+
+        } else if (nada.equalsIgnoreCase("suara")) {
+//            if (suara)
+//                //kode saat efek suara on
+//            else
+//                //kode saat efek suara off
+        }
     }
 
     public void tombolUbahSuara() {
