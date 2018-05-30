@@ -1,36 +1,33 @@
 package perusahaangaram.scmgame;
 
 
-import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import perusahaangaram.scmgame.database.Contract;
+import perusahaangaram.scmgame.objek.tempat;
 
 public class MenuPermainan extends AppCompatActivity {
     private TextView countdowntimer;
     private Button countdownbutton;
 
     private CountDownTimer countDownTimer;
-    private long timeLeftinMiliseconds = 300000; // 5 menit
+    private long timeLeftinMiliseconds = 600000; // 10 menit (1000milisx60= 60000 x 10 = 600000
     private boolean timeRunning;
 
     private boolean firstStart = true;
@@ -46,26 +43,35 @@ public class MenuPermainan extends AppCompatActivity {
     private ImageView ikonRumah[] = new ImageView[7];
     private ImageView notif_IkonStore[] = new ImageView[5];
     private ImageView notif_IkonRumah[] = new ImageView[7];
+    private TextView koin;
 
-    private int[][] resStore = {
-            {R.id.S_1, R.id.S_2, R.id.S_3, R.id.S_4, R.id.S_5}
+    private int[] resStore = {
+            R.id.S_1, R.id.S_2, R.id.S_3, R.id.S_4, R.id.S_5
     };
-    private int [] [] resNotifStore = {
-            {R.id.N_S_1, R.id.N_S_2, R.id.N_S_3, R.id.N_S_4, R.id.N_S_5}
+    private int[] resNotifStore = {
+            R.id.N_S_1, R.id.N_S_2, R.id.N_S_3, R.id.N_S_4, R.id.N_S_5
     };
-    private int[][] resRumah = {
-            {R.id.R_1, R.id.R_2, R.id.R_3, R.id.R_4, R.id.R_5}
+    private int[] resRumah = {
+            R.id.R_1, R.id.R_2, R.id.R_3, R.id.R_4, R.id.R_5, R.id.R_6, R.id.R_7
     };
-    private int [][] resNotifRumah = {
-            {R.id.N_R_1, R.id.N_R_2, R.id.N_R_3, R.id.N_R_4, R.id.N_R_5}
+    private int[] resNotifRumah = {
+            R.id.N_R_1, R.id.N_R_2, R.id.N_R_3, R.id.N_R_4, R.id.N_R_5, R.id.N_R_6, R.id.N_R_7
     };
+
+    private tempat toko[] = new tempat[5];
+    private tempat rumah[] = new tempat[7];
 
 
     //nama player
     private String nama;
+    private int jumlahToko = 4;
+    private int jumlahRumah = 6;
+    private int JumlahKoin = 0;
+
+    private boolean klik;
 
     public void init() {
-
+        klik = false;
         teks1 = (TextView) findViewById(R.id.teks1);
         teks2 = (TextView) findViewById(R.id.teks2);
         teks3 = (TextView) findViewById(R.id.teks3);
@@ -75,7 +81,59 @@ public class MenuPermainan extends AppCompatActivity {
         error = (TextView) findViewById(R.id.teksError);
         inputNama = (EditText) findViewById(R.id.inputNama);
         layoutDialog = (RelativeLayout) findViewById(R.id.dialog);
+        koin = (TextView) findViewById(R.id.skorpemain);
 
+
+        for (int i = 0; i < 5; i++) {
+            ikonStore[i] = findViewById(resStore[i]);
+            notif_IkonStore[i] = findViewById(resNotifStore[i]);
+            toko[i] = new tempat(this, ikonStore[i], notif_IkonStore[i], tempat.tiperumah.toko, i);
+
+            final int finalI = i;
+            ikonStore[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toko[finalI].tindakan();
+                    if (jumlahToko > -1) {
+                        run(jumlahToko);
+                    } else {
+                        run(jumlahRumah);
+                    }
+                    JumlahKoin += 5;
+                    koin.setText("" + JumlahKoin);
+                }
+            });
+        }
+        for (int i = 0; i < 7; i++) {
+            ikonRumah[i] = findViewById(resRumah[i]);
+            notif_IkonRumah[i] = findViewById(resNotifRumah[i]);
+            rumah[i] = new tempat(this, ikonRumah[i], notif_IkonRumah[i], tempat.tiperumah.rumah, i);
+
+            final int finalI = i;
+            ikonRumah[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    rumah[finalI].tindakan();
+                    if (jumlahRumah > -1) {
+                        run(jumlahRumah);
+                    }
+                    JumlahKoin += 10;
+                    koin.setText("" + JumlahKoin);
+                }
+            });
+        }
+    }
+
+    private void run(int i) {
+        if (jumlahToko < 0) {
+            rumah[i].mulai(i);
+            jumlahRumah--;
+        } else {
+            toko[i].mulai(i);
+            jumlahToko--;
+        }
+        Log.v("Rumah", "" + jumlahRumah);
+        Log.v("Toko", "" + jumlahToko);
     }
 
     @Override
@@ -163,7 +221,8 @@ public class MenuPermainan extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-
+                Intent i = new Intent(getApplicationContext(), MenuPetunjuk.class);
+                startActivity(i);
             }
         }.start();
         countdownbutton.setText("pause");
@@ -239,7 +298,6 @@ public class MenuPermainan extends AppCompatActivity {
         switch (kondisi) {
             case "next":
                 simpanNama();
-                startTimer();
                 pengguna.setText(nama);
                 batal.setVisibility(View.GONE);
                 inputNama.setVisibility(View.GONE);
@@ -252,6 +310,9 @@ public class MenuPermainan extends AppCompatActivity {
             case "close":
                 firstStart = false;
                 layoutDialog.setVisibility(View.GONE);
+                startTimer();
+                run(jumlahToko);
+                koin.setText("" + JumlahKoin);
                 break;
             default:
                 ;
