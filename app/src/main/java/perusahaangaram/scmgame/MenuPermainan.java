@@ -6,20 +6,23 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import perusahaangaram.scmgame.database.Contract;
+import perusahaangaram.scmgame.objek.tempat;
 import perusahaangaram.scmgame.objek.tempat;
 
 public class MenuPermainan extends AppCompatActivity {
@@ -58,6 +61,8 @@ public class MenuPermainan extends AppCompatActivity {
             R.id.N_R_1, R.id.N_R_2, R.id.N_R_3, R.id.N_R_4, R.id.N_R_5, R.id.N_R_6, R.id.N_R_7
     };
 
+    private tempat.tiperumah tipeBangunanSaatIni;
+
     private tempat toko[] = new tempat[5];
     private tempat rumah[] = new tempat[7];
 
@@ -68,10 +73,16 @@ public class MenuPermainan extends AppCompatActivity {
     private int jumlahRumah = 6;
     private int JumlahKoin = 0;
 
-    private boolean klik;
+    private boolean butuhKlik;
+    private Handler mHandler;
+
+    private durasiNotif waktuNotif;
+    private durasiJeda waktuJeda;
 
     public void init() {
-        klik = false;
+        butuhKlik = false;
+        waktuNotif = new durasiNotif();
+        waktuJeda = new durasiJeda();
         teks1 = (TextView) findViewById(R.id.teks1);
         teks2 = (TextView) findViewById(R.id.teks2);
         teks3 = (TextView) findViewById(R.id.teks3);
@@ -93,14 +104,18 @@ public class MenuPermainan extends AppCompatActivity {
             ikonStore[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    toko[finalI].tindakan();
-                    if (jumlahToko > -1) {
-                        run(jumlahToko);
-                    } else {
-                        run(jumlahRumah);
+                    if (butuhKlik && tipeBangunanSaatIni == tempat.tiperumah.toko) {
+                        if (jumlahToko == finalI) {
+                            JumlahKoin += 5;
+                            koin.setText("" + JumlahKoin);
+
+                            butuhKlik = false;
+                            toko[finalI].tindakan();
+                            mHandler.removeCallbacks(waktuNotif);
+                            jumlahToko--;
+                            run();
+                        }
                     }
-                    JumlahKoin += 5;
-                    koin.setText("" + JumlahKoin);
                 }
             });
         }
@@ -113,25 +128,26 @@ public class MenuPermainan extends AppCompatActivity {
             ikonRumah[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    rumah[finalI].tindakan();
-                    if (jumlahRumah > -1) {
-                        run(jumlahRumah);
+                    if (butuhKlik && tipeBangunanSaatIni == tempat.tiperumah.rumah) {
+                        if (jumlahRumah == finalI) {
+                            JumlahKoin += 10;
+                            koin.setText("" + JumlahKoin);
+                            cekSkor();
+
+                            butuhKlik = false;
+                            rumah[finalI].tindakan();
+                            mHandler.removeCallbacks(waktuNotif);
+                            jumlahRumah--;
+                            run();
+                        }
                     }
-                    JumlahKoin += 10;
-                    koin.setText("" + JumlahKoin);
                 }
             });
         }
     }
 
-    private void run(int i) {
-        if (jumlahToko < 0) {
-            rumah[i].mulai(i);
-            jumlahRumah--;
-        } else {
-            toko[i].mulai(i);
-            jumlahToko--;
-        }
+    private void run() {
+        mHandler.postDelayed(waktuJeda, 10000);
         Log.v("Rumah", "" + jumlahRumah);
         Log.v("Toko", "" + jumlahToko);
     }
@@ -199,7 +215,6 @@ public class MenuPermainan extends AppCompatActivity {
                 }
                 return false;
             }
-
         });
     }
 
@@ -221,7 +236,7 @@ public class MenuPermainan extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                Intent i = new Intent(getApplicationContext(), MenuPetunjuk.class);
+                Intent i = new Intent(getApplicationContext(), game_over.class);
                 startActivity(i);
             }
         }.start();
@@ -308,10 +323,13 @@ public class MenuPermainan extends AppCompatActivity {
                 simpan.setText("Lewati");
                 break;
             case "close":
+                mHandler = new Handler(Looper.getMainLooper());
+                tipeBangunanSaatIni = tempat.tiperumah.toko;
+                run();
+
                 firstStart = false;
                 layoutDialog.setVisibility(View.GONE);
                 startTimer();
-                run(jumlahToko);
                 koin.setText("" + JumlahKoin);
                 break;
             default:
@@ -333,5 +351,55 @@ public class MenuPermainan extends AppCompatActivity {
         }
     }
 
+    private class durasiNotif implements Runnable {
 
+        @Override
+        public void run() {
+            if (tipeBangunanSaatIni == tempat.tiperumah.toko) {
+                toko[jumlahToko].gantiImageNotif(tempat.notifikasi.tidakada);
+                butuhKlik = false;
+                jumlahToko--;
+                MenuPermainan.this.run();
+            } else if (tipeBangunanSaatIni == tempat.tiperumah.rumah) {
+                rumah[jumlahRumah].gantiImageNotif(tempat.notifikasi.tidakada);
+                butuhKlik = false;
+                jumlahRumah--;
+                MenuPermainan.this.run();
+            }
+            butuhKlik = false;
+        }
+    }
+
+    private class durasiJeda implements Runnable {
+
+        @Override
+        public void run() {
+            if (tipeBangunanSaatIni == tempat.tiperumah.toko) {
+                if (jumlahToko == -1) {
+                    tipeBangunanSaatIni = tempat.tiperumah.rumah;
+                    mHandler.removeCallbacks(waktuJeda);
+                    MenuPermainan.this.run();
+                } else {
+                    toko[jumlahToko].gantiImageNotif(tempat.notifikasi.notiftoko);
+                    mHandler.postDelayed(waktuNotif, 10000);
+                    butuhKlik = true;
+                }
+            } else if (tipeBangunanSaatIni == tempat.tiperumah.rumah) {
+                if (jumlahRumah == -1) {
+                    Toast.makeText(getApplicationContext(), "Selesai", Toast.LENGTH_LONG).show();
+                    stopTimer();
+                } else {
+                    rumah[jumlahRumah].gantiImageNotif(tempat.notifikasi.notifrumah);
+                    mHandler.postDelayed(waktuNotif, 10000);
+                    butuhKlik = true;
+                }
+            }
+        }
+    }
+
+    private void cekSkor() {
+        if (JumlahKoin >= 5) {
+            Toast.makeText(getApplicationContext(), "Selesai", Toast.LENGTH_LONG).show();
+        }
+    }
 }
