@@ -398,8 +398,10 @@ public class MenuPermainan extends AppCompatActivity {
     }
 
     private void cekSkor() {
-        if (JumlahKoin >= 5) {
+        if (JumlahKoin >= 95) {
             Toast.makeText(getApplicationContext(), "Selesai", Toast.LENGTH_LONG).show();
+            Intent a =  new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(a);
         }
     }
 }

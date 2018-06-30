@@ -93,8 +93,8 @@
                 android:id="@+id/N_R_4"
                 android:layout_width="24dp"
                 android:layout_height="20dp"
-                android:layout_alignEnd="@+id/R_4"
-                android:layout_below="@+id/R_1" />
+                android:layout_above="@+id/R_2"
+                android:layout_alignEnd="@+id/R_4" />
 
             <ImageView
                 android:id="@+id/R_5"
@@ -108,7 +108,7 @@
                 android:id="@+id/N_R_5"
                 android:layout_width="24dp"
                 android:layout_height="20dp"
-                android:layout_below="@+id/R_7"
+                android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/R_1" />
 
             <ImageView
@@ -123,7 +123,7 @@
             <ImageView
                 android:id="@+id/N_R_6"
                 android:layout_width="24dp"
-                android:layout_height="12dp"
+                android:layout_height="20dp"
                 android:layout_alignStart="@+id/R_4"
                 android:layout_below="@+id/R_5"
                 android:layout_marginTop="-97dp" />
@@ -183,9 +183,11 @@
             <ImageView
                 android:id="@+id/N_S_3"
                 android:layout_width="24dp"
-                android:layout_height="17dp"
-                android:layout_above="@+id/R_5"
-                android:layout_toStartOf="@+id/R_6" />
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="166dp"
+                android:layout_marginTop="134dp" />
 
             <ImageView
                 android:id="@+id/S_4"
@@ -198,7 +200,7 @@
                 android:id="@+id/N_S_4"
                 android:layout_width="24dp"
                 android:layout_height="20dp"
-                android:layout_below="@+id/R_2"
+                android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/R_2" />
 
             <ImageView
@@ -307,6 +309,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="142dp"
         android:background="@drawable/dialog_input_nama"
+       
         >
 
         <TextView
